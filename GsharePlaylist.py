@@ -1,5 +1,6 @@
 #!/usr/bin/python
 #coding=utf-8
+# Update 30/01/2020 and Salemmax
 import httplib2
 import json
 import re
@@ -128,9 +129,11 @@ def getItems(url_path="0", tq="select A,B,C,D,E"):
 	tracking_string : string
 		 Tên dễ đọc của view
 	'''
-	# Default Gshare Media Sheet ID
+	# Default HD Gshare Media Sheet ID
 
 	sheet_id = GetSheetIDFromSettings()
+	if "16u6eRGVoHLR-PpQqncnT6HT_0GwBChTDSe8PelHz4IM" in url_path:
+		return [{"label": "[COLOR red][B]This content is BLOCKED![/B][/COLOR]", "path":"plugin://plugin.video.salemmax.gshare/executebuiltin/-"}]
 	gid = url_path
 	if "@" in url_path:
 		path_split = url_path.split("@")
@@ -160,7 +163,7 @@ def getItems(url_path="0", tq="select A,B,C,D,E"):
 		item = {}
 		item["label"] = getValue(row["c"][0]).encode("utf-8")
 		item["label2"] = getValue(row["c"][4])
-		# Nếu phát hiện spreadsheet khác với *0*Gshareplaylist
+		# Nếu phát hiện spreadsheet khác với HD Gshare Media
 		new_path = getValue(row["c"][1])
 		if "@" in url_path and "@" not in new_path and "section/" in new_path:
 			gid = re.compile("section/(\d+)").findall(new_path)[0]
@@ -369,7 +372,7 @@ def CachedSection(path="0", tracking_string="Home"):
 
 
 @plugin.route('/password-section/<password>/<path>/<tracking_string>')
-def PasswordSection(password="0000", path="0", tracking_string="Home"):
+def PasswordSection(password="012340", path="0", tracking_string="Home"):
 	'''
 	Liệt kê danh sách các item của một sheet
 	Parameters
@@ -720,7 +723,7 @@ def RepoSection(path="0", tracking_string=""):
 		"label": "[COLOR green]Tự động cài tất cả Repo dưới (khuyên dùng)[/COLOR]".decode("utf-8"),
 		"path": pluginrootpath + "/install-repo/%s/%s" % (path, urllib.quote_plus("Install all repo")),
 		"is_playable": False,
-		"info": {"plot": "Bạn nên cài tất cả repo để sử dụng đầy đủ tính năng của [VN Open Playlist]"}
+		"info": {"plot": "Bạn nên cài tất cả repo để sử dụng đầy đủ tính năng của [HD Gshare Media]"}
 	}
 	items = [install_all_item] + items
 	return plugin.finish(items)
@@ -1055,7 +1058,7 @@ def get_playable_url(url):
 				}
 
 				(resp, content) = http.request(
-					convert_ipv4_url("https://api2.fshare.vn/api/session/download"), "POST",
+					convert_ipv4_url("https://api.fshare.vn/api/session/download"), "POST",
 					body=json.dumps(data),
 					headers=fshare_headers
 				)
@@ -1096,10 +1099,9 @@ def convert_ipv4_url(url):
 	return url
 
 def LoginFShare(uname,pword):
-	login_uri = "https://api2.fshare.vn/api/user/login"
+	login_uri = "https://api.fshare.vn/api/user/login"
 	login_uri = convert_ipv4_url(login_uri)
 	fshare_headers = {
-		"User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
 		"Accept-Encoding": "gzip, deflate, sdch"
 	}
 	data = '{"app_key": "L2S7R6ZMagggC5wWkQhX2+aDi467PPuftWUMRFSn","user_email": "%s","password": "%s"}' % (uname, pword)
@@ -1156,7 +1158,7 @@ def LoginOKNoti(user="",lvl=""):
 
 
 def GetFShareUser(cred):
-	user_url = "https://api2.fshare.vn/api/user/get"
+	user_url = "https://api.fshare.vn/api/user/get"
 	user_url = convert_ipv4_url(user_url)
 	headers = {
 		"Cookie": "session_id=" + cred["session_id"]
@@ -1202,8 +1204,8 @@ def GA(title="Home", page="/"):
 			'tid': 'UA-52209804-5',  # Thay GA id của bạn ở đây
 			'cid': client_id,
 			't': 'pageview',
-			'dp': "GshareMedia%s" % page,
-			'dt': "[GshareMedia] - %s" % title
+			'dp': "VNPlaylist%s" % page,
+			'dt': "[VNPlaylist] - %s" % title
 		}
 		http.request(
 			ga_url, "POST",
