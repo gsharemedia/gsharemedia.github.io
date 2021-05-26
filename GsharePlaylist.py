@@ -2,7 +2,6 @@
 #coding=utf-8
 import httplib2, json, re, urllib, os, uuid, contextlib, zipfile, random, base64, time, thread
 from datetime import datetime
-# Update vào Ngày 26/05/2021
 # Tham khảo xbmcswift2 framework cho kodi addon tại
 # http://xbmcswift2.readthedocs.io/en/latest/
 from xbmcswift2 import Plugin, xbmc, xbmcaddon, xbmcgui, actions
